@@ -6,20 +6,16 @@ import 'package:barcodescanner/post.dart';
 class Home extends  StatefulWidget{
   @override
   HomeState createState() => HomeState();
-
 }
 
 class HomeState extends State<Home>  {
-  //TextEditingController is controller for editable text fields.
-  //It's role is to update itself and notify listeners whenever it's associated
-  //textfield changes.
+
   var _nameController = new TextEditingController();
    String strImei, strSerial, strName,StrUrl;
 
 
   Future<void> ImeiscanBarcodeNormal() async {
     String StrImeibarcodeScanRes;
-    // Platform messages may fail, so we use a try/catch PlatformException.
     try {
       StrImeibarcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
           '#ff6666', 'Cancel Imei Scan', true, ScanMode.BARCODE);
@@ -86,32 +82,42 @@ class HomeState extends State<Home>  {
     return new Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: new AppBar(
-        title: new Text('Data Passing'),
+        title: new Text('Barcode Scanner'),
       ),
       body: new Container(
         child: new Center(
           child: Column(
             children: <Widget>[
+
               Padding(
                 child: new Text(
-                  ' Pass Data',
-                  style: new TextStyle(fontWeight: FontWeight.bold,fontSize: 20.0),
+                  ' Barcode Scanner(1.Imei 2. Serial. 3. Url-QR)',
+                  style: new TextStyle(fontWeight: FontWeight.bold,fontSize: 18.0),
                   textAlign: TextAlign.center,
                 ),
                 padding: EdgeInsets.only(bottom: 20.0),
               ),
               TextFormField(
-                decoration: InputDecoration(labelText: 'Username'),
+                decoration: InputDecoration(labelText: 'Device name'),
                 controller: _nameController,
               ),
               ElevatedButton(onPressed: (){
                 ImeiscanBarcodeNormal();
-              }, child: Text('Next')),
+              }, child: Text('Start Scanning')),
+           _nameController.text!=null && strImei!= null && strSerial !=null?
+              ElevatedButton(onPressed: () {
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) =>
+                        Post(name: _nameController.text,
+                            imei: strImei,
+                            serial: strSerial,
+                            url: StrUrl)));
+              }, child: Text('Proceed to Post on Database'))
+            :
+            ElevatedButton(onPressed: () {
 
+            }, child: Text('Please Scan To Proceed'))
 
-          ElevatedButton(onPressed: (){
-            Navigator.of(context).push(MaterialPageRoute(builder: (context)=>Post(name: _nameController.text, imei: strImei, serial: strSerial, url: StrUrl)));
-          }, child: Text('Go Next Page')),
             ],
           ),
         ),
@@ -133,3 +139,4 @@ class MyApp extends StatelessWidget {
 }
 
 void main() => runApp(new MyApp());
+

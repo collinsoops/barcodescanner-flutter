@@ -1,6 +1,10 @@
 # barcodescanner
 
-A barcode scanner that enables one to scan IMEI, Serial Number and also get URL from barcode and post on database.
+A barcode scanner that allows one to specify the name of the device and then starts to automatically Scans
+ 1. Imei-barcode, 
+ 2. Serial Barcode. 
+ 3. QR code to get Website URL.
+ 4. Allows the user to post on database.
 
 ## Getting Started
 
