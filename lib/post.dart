@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-
 import 'main.dart';
 
 class Post extends StatelessWidget {
@@ -10,14 +9,13 @@ class Post extends StatelessWidget {
   Post({Key key,@required this.name,@required this.imei,@required this.serial,@required this.url}) : super(key: key);
 
   addData()  {
-    var urli = "http://192.168.43.174:1234/api/ad.php";
+    Uri urli = Uri.parse("http://192.168.43.174:1234/api/ad.php");
     http.post(urli,body: jsonEncode({
       'name': name,
       'imei':imei,
       'serial':serial,
       'url':url,
     }));
-
     //var message = jsonDecode(response.body);
   }
   @override

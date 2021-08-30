@@ -4,7 +4,7 @@ A barcode scanner that allows one to specify the name of the device and then sta
  1. Imei-barcode, 
  2. Serial Barcode. 
  3. QR code to get Website URL.
- 4. Allows the user to post on database.
+ 4. Allows the user to proceed to post on a server connected to a database.
 
 ## Getting Started
 
