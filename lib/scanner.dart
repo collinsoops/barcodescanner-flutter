@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
@@ -38,8 +40,11 @@ class StepperBody extends StatefulWidget {
 }
 
 class _StepperBodyState extends State<StepperBody> {
+  String StrImeibarcodeScanRes="";
+  String StrSerialbarcodeScanRes="";
+
+
   Future<void> ImeiscanBarcodeNormal() async {
-    String StrImeibarcodeScanRes;
     try {
       StrImeibarcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
           '#ff6666', 'Cancel Imei Scan', true, ScanMode.BARCODE);
@@ -51,13 +56,11 @@ class _StepperBodyState extends State<StepperBody> {
     if (!mounted) return;
 
     setState(() {
-      data.imei=StrImeibarcodeScanRes;
-      data.imei="676yuiui66786869yui";
+      data.imei = StrImeibarcodeScanRes;
     });
   }
 
   Future<void> SerialscanBarcodeNormal() async {
-    String StrSerialbarcodeScanRes;
     try {
       StrSerialbarcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
           '#ff6667', 'Cancel Serial Scan', true, ScanMode.BARCODE);
@@ -68,8 +71,7 @@ class _StepperBodyState extends State<StepperBody> {
     if (!mounted) return;
 
     setState(() {
-      data.serial=StrSerialbarcodeScanRes;
-      data.serial="65757657657657657";
+      data.serial= StrSerialbarcodeScanRes;
     });
   }
   Future<void> scanQR() async {
@@ -87,8 +89,23 @@ class _StepperBodyState extends State<StepperBody> {
     // setState(() {
     //   data.=barcodeScanRes;
     // });
-
   }
+
+
+  addData()  {
+    //Uri urli = Uri.parse("http://192.168.43.174:1234/api/ad.php");
+    Uri urli = Uri.parse(data.url);
+    http.post(urli,body: jsonEncode({
+      'name': data.name,
+      'imei':data.imei,
+      'serial':data.serial,
+      'url':data.url,
+    }));
+    //var message = jsonDecode(response.body);
+  }
+
+
+
 
   int currStep = 0;
   static var _focusNode = new FocusNode();
@@ -148,10 +165,15 @@ class _StepperBodyState extends State<StepperBody> {
                 ),
                 actions: <Widget>[
                   new FlatButton(
-                    child: new Text('OK'),
+                    child: new Text('Back'),
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
+                  ),  new FlatButton(
+                    child: new Text('Post to Database',style: TextStyle(fontWeight:FontWeight.bold,)),
+                    onPressed: () {
+                    addData();
+                      },
                   ),
                 ],
               );
@@ -184,11 +206,11 @@ class _StepperBodyState extends State<StepperBody> {
                         maxLines: 1,
                         validator: (value) {
                           if (value.isEmpty || value.length < 1) {
-                            return 'Please enter name';
+                            return 'Please enter name of device';
                           }
                         },
                         decoration: new InputDecoration(
-                            labelText: 'Enter your name',
+                            labelText: 'Enter device name',
                             hintText: 'Enter a name',
                             //filled: true,
                             icon: const Icon(Icons.edit),
@@ -196,35 +218,36 @@ class _StepperBodyState extends State<StepperBody> {
                             new TextStyle(decorationStyle: TextDecorationStyle.solid)),
                       )),
                   new Step(
-                      title: const Text('Imei'),
+                      title: const Text('Imei No.'),
                       //subtitle: const Text('Subtitle'),
                       isActive: true,
                       //state: StepState.editing,
                       state: StepState.indexed,
                       content: new TextFormField(
                         onTap: (){
-                          ImeiscanBarcodeNormal();
+                         ImeiscanBarcodeNormal();
+
                         },
                         keyboardType: TextInputType.text,
                         autocorrect: false,
-                        validator: (value) {
-                          if (value.isEmpty || value.length < 10) {
+                      /*  validator: (value) {
+                          if (value.isEmpty || value.length < 1) {
                             return 'The imei is Wrong';
                           }
-                        },
+                        },*/
                       /*  onSaved: (String value) {
                           data.imei = value;
                         },*/
                         maxLines: 1,
                         decoration: new InputDecoration(
-                            labelText: 'Enter Imei',
-                            hintText: 'Enter Imei',
+                            labelText: 'Tap to Scan Imei',
+                            hintText: data.imei.isNotEmpty? data.imei : 'Scan Imei',
                             icon: const Icon(Icons.edit),
                             labelStyle:
                             new TextStyle(decorationStyle: TextDecorationStyle.solid)),
                       )),
                   Step(
-                      title: const Text('Serial'),
+                      title: const Text('Serial No.'),
                       // subtitle: const Text('Subtitle'),
                       isActive: true,
                       state: StepState.indexed,
@@ -235,18 +258,18 @@ class _StepperBodyState extends State<StepperBody> {
                         },
                         keyboardType: TextInputType.text,
                         autocorrect: false,
-                        validator: (value) {
+                      /*  validator: (value) {
                           if (value.isEmpty) {
                             return 'The Serial is Invalid';
                           }
-                        },
+                        },*/
                       /*  onSaved: (String value) {
                           data.serial = value;
                         },*/
                         maxLines: 1,
                         decoration: new InputDecoration(
-                            labelText: 'Enter your serial',
-                            hintText: 'Enter serial',
+                            labelText: 'Tap to Scan Serial No.',
+                            hintText: data.serial.isNotEmpty? data.serial: 'Scan Serial',
                             icon: const Icon(Icons.edit),
                             labelStyle:
                             new TextStyle(decorationStyle: TextDecorationStyle.solid)),
@@ -260,7 +283,7 @@ class _StepperBodyState extends State<StepperBody> {
                         keyboardType: TextInputType.url,
                         autocorrect: false,
                         validator: (value) {
-                          if (value.isEmpty || value.length > 2 || !value.contains("http")) {
+                          if ( value.length < 3 ){
                             return 'Please enter a valid URl';
                           }
                         },
@@ -269,7 +292,7 @@ class _StepperBodyState extends State<StepperBody> {
                           data.url = value;
                         },
                         decoration: new InputDecoration(
-                            labelText: 'Enter your url',
+                            labelText: 'Enter your url to post',
                             hintText: 'Enter url',
                             icon: const Icon(Icons.http),
                             labelStyle:
@@ -304,13 +327,16 @@ class _StepperBodyState extends State<StepperBody> {
                   });
                 },
               ),
-              new RaisedButton(
-                child: new Text(
-                  'Save details',
-                  style: new TextStyle(color: Colors.white),
+              Padding(
+                padding: EdgeInsets.only(left: 20,right: 20),
+                child: new RaisedButton(
+                  child: new Text(
+                    'Proceed',
+                    style: new TextStyle(color: Colors.white),
+                  ),
+                  onPressed: _submitDetails,
+                  color: Colors.blue,
                 ),
-                onPressed: _submitDetails,
-                color: Colors.blue,
               ),
             ]),
           ),

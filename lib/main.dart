@@ -10,10 +10,8 @@ class Home extends  StatefulWidget{
 }
 
 class HomeState extends State<Home>  {
-
   var _nameController = new TextEditingController();
    String strImei, strSerial, strName,StrUrl;
-
 
   Future<void> ImeiscanBarcodeNormal() async {
     String StrImeibarcodeScanRes;
@@ -71,11 +69,9 @@ class HomeState extends State<Home>  {
     // message was in flight, we want to discard the reply rather than calling
     // setState to update our non-existent appearance.
     if (!mounted) return;
-
     setState(() {
       StrUrl=barcodeScanRes;
     });
-
   }
 
   @override
@@ -126,7 +122,6 @@ class HomeState extends State<Home>  {
     );
   }
 }
-
 
 class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
