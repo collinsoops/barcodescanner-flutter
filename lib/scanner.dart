@@ -22,12 +22,13 @@ class MyAppScreenMode extends State<MyScanner> {
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
+      debugShowCheckedModeBanner: false,
         theme: new ThemeData(
           primarySwatch: Colors.blue,
         ),
         home: new Scaffold(
           appBar: new AppBar(
-            title: new Text('Scanner'),
+            title: Center(child: new Text('Barcode Scanner')),
           ),
           body: new StepperBody(),
         ));
@@ -242,7 +243,7 @@ class _StepperBodyState extends State<StepperBody> {
                         decoration: new InputDecoration(
                             labelText: 'Tap to Scan Imei',
                             hintText: data.imei.isNotEmpty? data.imei : 'Scan Imei',
-                            icon: const Icon(Icons.edit),
+                            icon: const Icon(Icons.scanner),
                             labelStyle:
                             new TextStyle(decorationStyle: TextDecorationStyle.solid)),
                       )),
@@ -270,7 +271,7 @@ class _StepperBodyState extends State<StepperBody> {
                         decoration: new InputDecoration(
                             labelText: 'Tap to Scan Serial No.',
                             hintText: data.serial.isNotEmpty? data.serial: 'Scan Serial',
-                            icon: const Icon(Icons.edit),
+                            icon: const Icon(Icons.scanner_outlined),
                             labelStyle:
                             new TextStyle(decorationStyle: TextDecorationStyle.solid)),
                       )),
