@@ -43,6 +43,7 @@ class StepperBody extends StatefulWidget {
 class _StepperBodyState extends State<StepperBody> {
   String StrImeibarcodeScanRes="";
   String StrSerialbarcodeScanRes="";
+  bool visible = false;
 
 
   Future<void> ImeiscanBarcodeNormal() async {
@@ -93,19 +94,77 @@ class _StepperBodyState extends State<StepperBody> {
   }
 
 
-  addData()  {
-    //Uri urli = Uri.parse("http://192.168.43.174:1234/api/ad.php");
-    Uri urli = Uri.parse(data.url);
-    http.post(urli,body: jsonEncode({
-      'name': data.name,
+  Future webCall() async{
+    // Showing CircularProgressIndicator using State.
+    setState(() {
+      visible = true ;
+    });
+
+    // API URL
+    // var url = 'https://flutter-examples.000webhostapp.com/submit_data.php';
+    Uri url = Uri.parse(data.url);
+
+
+    // Store all data with Param Name.
+    var jsondata = {'name': data.name,
       'imei':data.imei,
       'serial':data.serial,
-      'url':data.url,
-    }));
-    //var message = jsonDecode(response.body);
+      'url':data.url};
+
+    // Starting Web Call with data.
+    var response = await http.post(url, body: json.encode(jsondata));
+
+    // Getting Server response into variable.
+    var message = jsonDecode(response.body);
+    print ("the message is"+ message);
+
+    // If Web call Success than Hide the CircularProgressIndicator.
+    if(response.statusCode == 200){
+      setState(() {
+        visible = false;
+      });
+    }
+    // Showing Alert Dialog with Response JSON.
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: new Text(message),
+          actions: <Widget>[
+            FlatButton(
+              child: new Text("OK"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+
   }
 
 
+
+
+
+  addData()  async {
+    //Uri urli = Uri.parse("http://192.168.43.174:1234/api/ad.php");
+    final response = await http.post(
+      Uri.parse(data.url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'name': data.name,
+        'imei':data.imei,
+        'serial':data.serial,
+        'url':data.url,
+      }),
+    );
+    var message = jsonDecode(response.body);
+    print(message);
+  }
 
 
   int currStep = 0;
@@ -151,7 +210,7 @@ class _StepperBodyState extends State<StepperBody> {
         showDialog(
             context: context,
             builder:  (BuildContext context) {
-              return  AlertDialog(
+              return AlertDialog(
                 title: new Text("Details"),
                 //content: new Text("Hello World"),
                 content: new SingleChildScrollView(
@@ -172,12 +231,15 @@ class _StepperBodyState extends State<StepperBody> {
                     },
                   ),  new FlatButton(
                     child: new Text('Post to Database',style: TextStyle(fontWeight:FontWeight.bold,)),
+
                     onPressed: () {
-                    addData();
+                    //addData();
+                      webCall();
                       },
                   ),
                 ],
               );
+
             }
             );
       }
