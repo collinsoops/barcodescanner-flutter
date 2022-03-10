@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 
-class MyScanner extends StatefulWidget {
+class Scan extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
     return new MyAppScreenMode();
@@ -18,11 +18,11 @@ class MyData {
   String url = '';
 }
 
-class MyAppScreenMode extends State<MyScanner> {
+class MyAppScreenMode extends State<Scan> {
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
-      debugShowCheckedModeBanner: false,
+        debugShowCheckedModeBanner: false,
         theme: new ThemeData(
           primarySwatch: Colors.blue,
         ),
@@ -107,7 +107,7 @@ class _StepperBodyState extends State<StepperBody> {
     var jsondata = {
       'imei':data.imei,
       'serial':data.serial,
-      };
+    };
 
     // Starting Web Call with data.
     var response = await http.post(url, body: json.encode(jsondata));
@@ -130,17 +130,16 @@ class _StepperBodyState extends State<StepperBody> {
             FlatButton(
               child: new Text("OK"),
               onPressed: () {
-               // Navigator.of(context).pop();
+                // Navigator.of(context).pop();
                 Navigator.of(context).push(MaterialPageRoute(
-                           builder: (context) => MyScanner(),
-                         ));
+                  builder: (context) => Scan(),
+                ));
               },
             ),
           ],
         );
       },
     );
-
   }
 
 
@@ -160,7 +159,7 @@ class _StepperBodyState extends State<StepperBody> {
 
   @override
   void dispose() {
-   // _focusNode.dispose();
+    // _focusNode.dispose();
     //super.dispose();
   }
   @override
@@ -174,7 +173,6 @@ class _StepperBodyState extends State<StepperBody> {
 
     void _submitDetails() {
       final FormState formState = _formKey.currentState;
-
       if (!formState.validate()) {
         showSnackBarMessage('Please enter correct data');
       } else {
@@ -183,7 +181,7 @@ class _StepperBodyState extends State<StepperBody> {
         print("Serial: ${data.serial}");
         print("Url: ${data.url}");
 
-       !visible? showDialog(
+        showDialog(
             context: context,
             builder:  (BuildContext context) {
               return AlertDialog(
@@ -208,38 +206,44 @@ class _StepperBodyState extends State<StepperBody> {
                     },
                   ),  new FlatButton(
                     color: Colors.blue,
-                    child: visible?    Visibility(
-                        visible: visible,
-                        child: Container(
+                    child: visible?     Container(
                             margin: EdgeInsets.only(bottom: 30),
                             child: CircularProgressIndicator()
                         )
-                    ): new Text('Post',style: TextStyle(fontWeight:FontWeight.bold,)),
+                    : new Text('Post',style: TextStyle(fontWeight:FontWeight.bold,)),
                     onPressed: () {
-                    //addData();
+                      //addData();
                       webCall();
-                      },
+                      Navigator.of(context).pop();
+                    },
                   ),
                 ],
               );
-
             }
-            ):
-       Visibility(
-           visible: visible,
-           child: Container(
-               margin: EdgeInsets.only(bottom: 30),
-               child: CircularProgressIndicator()
-           )
-       )
-        ;
+        );
       }
     }
-
     return new Container(
         child: Padding(
           padding:EdgeInsets.only(top:10),
-          child: new Form(
+          child: visible?
+
+          Visibility(
+              visible: visible,
+              child: Padding(
+                padding: EdgeInsets.only(left:10, right:10),
+                child: Center(
+                  child: Card(
+                     // margin: EdgeInsets.only(bottom: 30),
+                      child: Column( children: [
+                        Text("Please Wait"),
+                        LinearProgressIndicator(color: Colors.lightBlueAccent,)
+                      ],)
+                  ),
+                ),
+              )
+          )
+              :new Form(
             key: _formKey,
             child: new ListView(children: <Widget>[
               new Stepper(
@@ -252,17 +256,17 @@ class _StepperBodyState extends State<StepperBody> {
                       state: StepState.indexed,
                       content: new TextFormField(
                         onTap: (){
-                         ImeiscanBarcodeNormal();
+                          ImeiscanBarcodeNormal();
 
                         },
                         keyboardType: TextInputType.text,
                         autocorrect: false,
-                      /*  validator: (value) {
+                        /*  validator: (value) {
                           if (value.isEmpty || value.length < 1) {
                             return 'The imei is Wrong';
                           }
                         },*/
-                      /*  onSaved: (String value) {
+                        /*  onSaved: (String value) {
                           data.imei = value;
                         },*/
                         maxLines: 1,
@@ -285,12 +289,12 @@ class _StepperBodyState extends State<StepperBody> {
                         },
                         keyboardType: TextInputType.text,
                         autocorrect: false,
-                      /*  validator: (value) {
+                        /*  validator: (value) {
                           if (value.isEmpty) {
                             return 'The Serial is Invalid';
                           }
                         },*/
-                      /*  onSaved: (String value) {
+                        /*  onSaved: (String value) {
                           data.serial = value;
                         },*/
                         maxLines: 1,
@@ -357,7 +361,9 @@ class _StepperBodyState extends State<StepperBody> {
               Padding(
                 padding: EdgeInsets.only(left: 20,right: 20),
                 child: new RaisedButton(
-                  child: new Text(
+                  child: visible?
+                      CircularProgressIndicator(color: Colors.blue,):
+    new Text(
                     'Proceed',
                     style: new TextStyle(color: Colors.white),
                   ),

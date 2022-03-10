@@ -1,3 +1,4 @@
+import 'package:barcodescanner/scan.dart';
 import 'package:barcodescanner/scanner.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -134,5 +135,5 @@ class MyApp extends StatelessWidget {
   }
 }
 
-void main() => runApp(new MyScanner());
+void main() => runApp(new Scan());
 
